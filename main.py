@@ -52,6 +52,11 @@ def main():
     draw_color = COLORS['purple']
     brush_thickness = BRUSH_THICKNESS
     
+    # Eraser mode
+    ERASER_COLOR = (0, 0, 0)  # Black erases on black canvas
+    is_eraser_mode = False
+    previous_color = draw_color  # Store color before eraser mode
+    
     # Pinch detection state
     is_adjusting_size = False
     
@@ -92,7 +97,10 @@ def main():
     print("  • Press 'c' → Clear canvas")
     print("  • Press '+' → Increase brush size")
     print("  • Press '-' → Decrease brush size")
+    print("  • Press 'e' → Toggle eraser mode")
+    print("  • ✊ Fist gesture → Eraser mode")
     print("  • 👌 Pinch (thumb+index) → Adjust brush size")
+    print("  • 👍 Thumbs up → Save indicator")
     print("\n" + "=" * 50)
     
     # =====================
@@ -139,6 +147,15 @@ def main():
                     selected = palette.check_selection(index_tip[0], index_tip[1])
                     if selected is not None:
                         draw_color = selected
+                        # Handle eraser mode state
+                        if selected == ERASER_COLOR:
+                            if not is_eraser_mode:
+                                previous_color = draw_color
+                            is_eraser_mode = True
+                            brush_thickness = ERASER_THICKNESS
+                        else:
+                            is_eraser_mode = False
+                            brush_thickness = BRUSH_THICKNESS
                     
                     # Draw rectangle at cursor position
                     cv2.rectangle(frame, 
@@ -175,7 +192,7 @@ def main():
                 prev_x, prev_y = 0, 0
             
             # BRUSH SIZE MODE: Thumb + Index pinch (both up, others down)
-            # NOTE: Gesture-based brush size temporarily disabled. Use +/- keys instead.
+            # NOTE: Disabled - causes awkward transition to draw mode. Use +/- keys instead.
             # elif fingers == [1, 1, 0, 0, 0]:
             #     cv2.putText(frame, "BRUSH SIZE MODE", (50, 155),
             #                cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 165, 0), 2)
@@ -193,6 +210,25 @@ def main():
             #         if info:
             #             cx, cy = info[4], info[5]
             #             cv2.circle(frame, (cx, cy), brush_thickness // 2, draw_color, 2)
+            
+            # SAVE GESTURE: Thumbs up (only thumb up)
+            elif fingers == [1, 0, 0, 0, 0]:
+                cv2.putText(frame, "SAVE DRAWING", (50, 155),
+                           cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                prev_x, prev_y = 0, 0
+                # Save is triggered once when gesture is detected
+                # The actual save happens via keyboard 's' to avoid multiple saves
+            
+            # ERASER MODE: Fist gesture (all fingers down)
+            elif fingers == [0, 0, 0, 0, 0]:
+                cv2.putText(frame, "ERASER MODE", (50, 155),
+                           cv2.FONT_HERSHEY_SIMPLEX, 1, (128, 128, 128), 2)
+                if not is_eraser_mode:
+                    previous_color = draw_color
+                    is_eraser_mode = True
+                draw_color = ERASER_COLOR
+                brush_thickness = ERASER_THICKNESS
+                prev_x, prev_y = 0, 0
             
             else:
                 prev_x, prev_y = 0, 0  # Reset when not drawing
@@ -221,6 +257,11 @@ def main():
         brush_text = f'Brush: {brush_thickness}px'
         cv2.putText(frame, brush_text, (CAMERA_WIDTH - 210, 125),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+        
+        # Display eraser mode indicator
+        if is_eraser_mode:
+            cv2.putText(frame, "ERASER", (CAMERA_WIDTH - 120, 155),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
         
         # Draw brush size preview circle
         cv2.circle(frame, (CAMERA_WIDTH - 30, 116), brush_thickness // 2, draw_color, -1)
@@ -263,6 +304,20 @@ def main():
         elif key == ord('-') or key == ord('_'):  # '-' key
             brush_thickness = max(MIN_BRUSH_SIZE, brush_thickness - BRUSH_SIZE_STEP)
             #print(f"🖌️  Brush size: {brush_thickness}px")
+        elif key == ord('e'):  # Toggle eraser mode
+            if is_eraser_mode:
+                # Exit eraser mode - restore previous color
+                is_eraser_mode = False
+                draw_color = previous_color
+                brush_thickness = BRUSH_THICKNESS
+               # print("🎨 Drawing mode")
+            else:
+                # Enter eraser mode
+                previous_color = draw_color
+                is_eraser_mode = True
+                draw_color = ERASER_COLOR
+                brush_thickness = ERASER_THICKNESS
+               # print("🧽 Eraser mode")
     
     # Cleanup
     cap.release()

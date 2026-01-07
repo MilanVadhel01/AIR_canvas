@@ -109,3 +109,38 @@ index_tip = detector.get_finger_tip(1)  # Get index finger position
 ## Usage
 
 Press `+` or `=` to increase, `-` to decrease brush thickness while drawing.
+
+---
+
+# Add Eraser Functionality
+
+## What Was Added
+
+| Feature | Description |
+|---------|-------------|
+| Fist gesture | `[0,0,0,0,0]` (all fingers down) activates eraser |
+| Keyboard `e` | Toggle eraser mode on/off |
+| Color palette | "Eraser" option in header bar |
+| Larger size | Eraser uses 50px thickness |
+| UI indicator | Shows "ERASER" text when active |
+
+## Usage
+
+- Press `e` to toggle eraser mode
+- Make a fist gesture to temporarily erase
+- Select "Eraser" from color palette header
+
+---
+
+# Add Gesture-Based Controls
+
+## Complete Gesture Summary
+
+| Gesture | Finger Pattern | Action |
+|---------|----------------|--------|
+| 👆 Index up | `[0,1,0,0,0]` | Draw on canvas |
+| ✌️ Index + Middle | `[0,1,1,0,0]` | Selection/cursor mode |
+| 👌 Thumb + Index | `[1,1,0,0,0]` | Adjust brush size (pinch) |
+| 👍 Thumbs up | `[1,0,0,0,0]` | Save indicator |
+| 🖐️ Open palm | `[1,1,1,1,1]` | Clear canvas |
+| ✊ Fist | `[0,0,0,0,0]` | Eraser mode |

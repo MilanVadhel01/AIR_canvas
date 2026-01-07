@@ -82,9 +82,27 @@ pip install -r requirements.txt
 
 ### Step 4: Run the Application
 
+**Desktop Version:**
 ```bash
 python main.py
 ```
+
+**Web Version (Streamlit):**
+```bash
+streamlit run app.py
+```
+
+---
+
+## 🌐 Deploy Online
+
+Deploy to **Streamlit Cloud** for free:
+
+1. Push your code to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Connect your GitHub repo
+4. Set main file: `app.py`
+5. Click Deploy!
 
 ---
 
@@ -119,9 +137,9 @@ numpy>=1.24.0
 - [x] Create canvas drawing logic
 - [x] Add color palette selection
 - [x] Implement brush size controls
-- [ ] Add eraser functionality
-- [ ] Implement save/export feature
-- [ ] Add gesture-based controls
+- [x] Add eraser functionality
+- [x] Implement save/export feature
+- [x] Add gesture-based controls
 - [ ] Testing and optimization
 
 ---

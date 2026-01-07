@@ -116,8 +116,8 @@ numpy>=1.24.0
 
 - [x] Project setup and structure
 - [x] Implement hand detection module
-- [ ] Create canvas drawing logic
-- [ ] Add color palette selection
+- [x] Create canvas drawing logic
+- [x] Add color palette selection
 - [ ] Implement brush size controls
 - [ ] Add eraser functionality
 - [ ] Implement save/export feature

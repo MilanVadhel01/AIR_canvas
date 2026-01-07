@@ -19,6 +19,7 @@ Controls:
 import cv2
 import numpy as np
 from src.hand_detector import HandDetector
+from src.color_palette import ColorPalette
 
 
 def main():
@@ -61,6 +62,9 @@ def main():
     
     # Initialize hand detector
     detector = HandDetector(detection_con=0.7, track_con=0.7, max_hands=1)
+    
+    # Initialize color palette
+    palette = ColorPalette(CAMERA_WIDTH)
     
     # Create blank canvas (same size as camera frame)
     canvas = np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH, 3), np.uint8)
@@ -119,8 +123,13 @@ def main():
                 cv2.putText(frame, "SELECTION MODE", (50, 150),
                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
                 
-                # Draw rectangle at cursor position
+                # Check for color selection in palette
                 if index_tip:
+                    selected = palette.check_selection(index_tip[0], index_tip[1])
+                    if selected is not None:
+                        draw_color = selected
+                    
+                    # Draw rectangle at cursor position
                     cv2.rectangle(frame, 
                                  (index_tip[0] - 20, index_tip[1] - 20),
                                  (index_tip[0] + 20, index_tip[1] + 20),
@@ -174,15 +183,8 @@ def main():
         # Display UI Elements
         # =====================
         
-        # Title
-        cv2.putText(frame, "AI Air Canvas", (CAMERA_WIDTH - 250, 50),
-                   cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-        
-        # Color indicator
-        cv2.rectangle(frame, (CAMERA_WIDTH - 100, 70), (CAMERA_WIDTH - 20, 120),
-                     draw_color, cv2.FILLED)
-        cv2.putText(frame, "Color", (CAMERA_WIDTH - 95, 150),
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+        # Draw color palette
+        frame = palette.draw(frame, draw_color)
         
         # Show the frame
         cv2.imshow("AI Air Canvas", frame)

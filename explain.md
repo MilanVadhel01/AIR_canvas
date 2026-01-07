@@ -85,3 +85,27 @@ index_tip = detector.get_finger_tip(1)  # Get index finger position
 | Header bar | 6 color boxes at top (Purple, Blue, Green, Red, Yellow, Eraser) |
 | Gesture selection | Hover with Index+Middle fingers to select color |
 | Visual feedback | Selected color highlighted with white border |
+
+---
+
+# Implement Brush Size Controls
+
+## What Was Added
+
+| Feature | Description |
+|---------|-------------|
+| Keyboard `+`/`-` | Increase/decrease brush size by 5px |
+| Size limits | Min: 5px, Max: 50px |
+| UI indicator | Shows "Brush: Xpx" with preview circle (top-right) |
+
+## Code Location
+
+| Feature | File | Lines |
+|---------|------|-------|
+| Constants | `main.py` | 36-38 (`MIN_BRUSH_SIZE`, `MAX_BRUSH_SIZE`, `BRUSH_SIZE_STEP`) |
+| UI display | `main.py` | 220-227 |
+| Keyboard controls | `main.py` | 260-265 |
+
+## Usage
+
+Press `+` or `=` to increase, `-` to decrease brush thickness while drawing.

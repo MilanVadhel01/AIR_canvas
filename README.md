@@ -94,7 +94,7 @@ python main.py
 |---------|--------|
 | **Index finger up** | Draw on canvas |
 | **Index + Middle finger up** | Move cursor (selection mode) |
-| **Thumb + Index pinch** | Select color/tool |
+| **Thumb + Index up** | Adjust brush size (spread/pinch) |
 | **All fingers up (open palm)** | Clear canvas |
 | **Fist** | Save drawing |
 
@@ -118,7 +118,7 @@ numpy>=1.24.0
 - [x] Implement hand detection module
 - [x] Create canvas drawing logic
 - [x] Add color palette selection
-- [ ] Implement brush size controls
+- [x] Implement brush size controls
 - [ ] Add eraser functionality
 - [ ] Implement save/export feature
 - [ ] Add gesture-based controls
@@ -150,8 +150,10 @@ This project is licensed under the MIT License.
 Input	              Action
 👆 Index finger	     Draw
 ✌️ Index + Middle	Move cursor
-🖐️ Open palm	     Clear canvas
+� Thumb + Index	Adjust brush size
+�🖐️ Open palm	     Clear canvas
 q	                Quit
 s	                Save drawing
 c	                Clear canvas
 1-5	                 Change color
++/-	                Brush size

@@ -33,6 +33,11 @@ def main():
     BRUSH_THICKNESS = 15
     ERASER_THICKNESS = 50
     
+    # Brush size limits
+    MIN_BRUSH_SIZE = 5
+    MAX_BRUSH_SIZE = 50
+    BRUSH_SIZE_STEP = 5  # For keyboard controls
+    
     # Colors (BGR format)
     COLORS = {
         'purple': (255, 0, 255),
@@ -46,6 +51,9 @@ def main():
     # Current drawing settings
     draw_color = COLORS['purple']
     brush_thickness = BRUSH_THICKNESS
+    
+    # Pinch detection state
+    is_adjusting_size = False
     
     # =====================
     # Initialize Components
@@ -82,6 +90,9 @@ def main():
     print("  • Press 'q' → Quit")
     print("  • Press 's' → Save drawing")
     print("  • Press 'c' → Clear canvas")
+    print("  • Press '+' → Increase brush size")
+    print("  • Press '-' → Decrease brush size")
+    print("  • 👌 Pinch (thumb+index) → Adjust brush size")
     print("\n" + "=" * 50)
     
     # =====================
@@ -110,8 +121,8 @@ def main():
             finger_count = detector.count_fingers()
             
             # Display finger count
-            cv2.putText(frame, f'Fingers: {finger_count}', (50, 100),
-                       cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(frame, f'Fingers: {finger_count}', (50, 125),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
             
             # =====================
             # Gesture Recognition
@@ -120,7 +131,7 @@ def main():
             # SELECTION MODE: Index + Middle finger up
             if fingers == [0, 1, 1, 0, 0]:
                 prev_x, prev_y = 0, 0  # Reset drawing
-                cv2.putText(frame, "SELECTION MODE", (50, 150),
+                cv2.putText(frame, "SELECTION MODE", (50, 155),
                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
                 
                 # Check for color selection in palette
@@ -137,7 +148,7 @@ def main():
             
             # DRAWING MODE: Only index finger up
             elif fingers == [0, 1, 0, 0, 0]:
-                cv2.putText(frame, "DRAWING MODE", (50, 150),
+                cv2.putText(frame, "DRAWING MODE", (50, 155),
                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 
                 if index_tip:
@@ -158,10 +169,30 @@ def main():
             
             # CLEAR CANVAS: All fingers up (open palm)
             elif fingers == [1, 1, 1, 1, 1]:
-                cv2.putText(frame, "CLEAR CANVAS", (50, 150),
+                cv2.putText(frame, "CLEAR CANVAS", (50, 155),
                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 canvas = np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH, 3), np.uint8)
                 prev_x, prev_y = 0, 0
+            
+            # BRUSH SIZE MODE: Thumb + Index pinch (both up, others down)
+            # NOTE: Gesture-based brush size temporarily disabled. Use +/- keys instead.
+            # elif fingers == [1, 1, 0, 0, 0]:
+            #     cv2.putText(frame, "BRUSH SIZE MODE", (50, 155),
+            #                cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 165, 0), 2)
+            #     prev_x, prev_y = 0, 0
+            #     
+            #     # Calculate distance between thumb and index finger
+            #     distance, frame, info = detector.find_distance(4, 8, frame, draw=True)
+            #     
+            #     if distance > 0:
+            #         # Map distance (30-200 pixels) to brush size (MIN-MAX)
+            #         brush_thickness = int(np.interp(distance, [30, 200], [MIN_BRUSH_SIZE, MAX_BRUSH_SIZE]))
+            #         brush_thickness = max(MIN_BRUSH_SIZE, min(MAX_BRUSH_SIZE, brush_thickness))
+            #         
+            #         # Display brush size preview circle
+            #         if info:
+            #             cx, cy = info[4], info[5]
+            #             cv2.circle(frame, (cx, cy), brush_thickness // 2, draw_color, 2)
             
             else:
                 prev_x, prev_y = 0, 0  # Reset when not drawing
@@ -185,6 +216,15 @@ def main():
         
         # Draw color palette
         frame = palette.draw(frame, draw_color)
+        
+        # Display brush size indicator
+        brush_text = f'Brush: {brush_thickness}px'
+        cv2.putText(frame, brush_text, (CAMERA_WIDTH - 210, 125),
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+        
+        # Draw brush size preview circle
+        cv2.circle(frame, (CAMERA_WIDTH - 30, 116), brush_thickness // 2, draw_color, -1)
+        cv2.circle(frame, (CAMERA_WIDTH - 30, 116), brush_thickness // 2, (255, 255, 255), 2)
         
         # Show the frame
         cv2.imshow("AI Air Canvas", frame)
@@ -217,6 +257,12 @@ def main():
             draw_color = COLORS['red']
         elif key == ord('5'):
             draw_color = COLORS['yellow']
+        elif key == ord('+') or key == ord('='):  # '+' key (with or without shift)
+            brush_thickness = min(MAX_BRUSH_SIZE, brush_thickness + BRUSH_SIZE_STEP)
+            #print(f"🖌️  Brush size: {brush_thickness}px")
+        elif key == ord('-') or key == ord('_'):  # '-' key
+            brush_thickness = max(MIN_BRUSH_SIZE, brush_thickness - BRUSH_SIZE_STEP)
+            #print(f"🖌️  Brush size: {brush_thickness}px")
     
     # Cleanup
     cap.release()

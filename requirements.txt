@@ -1,3 +1,5 @@
-opencv-python
-mediapipe
-numpy
+opencv-python>=4.8.0
+mediapipe>=0.10.0
+numpy>=1.24.0 
+
+#requirements for hand detection

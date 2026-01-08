@@ -67,7 +67,10 @@ cd AIR_canvas
 ```bash
 # Windows
 python -m venv venv
-venv\Scripts\activate
+
+.\venv311\Scripts\python.exe main.py (recommended because it can only run on python 3.11)
+or
+venv\Scripts\activate 
 
 # macOS/Linux
 python3 -m venv venv
